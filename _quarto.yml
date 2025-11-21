@@ -1,0 +1,23 @@
+project:
+  type: website
+  output-dir: docs     
+
+website:
+  title: "Diabetes Modeling Project"
+  navbar:
+    left:
+      - text: "EDA"
+        href: EDA.html
+      - text: "Modeling"
+        href: Modeling.html
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+
+# Render ONLY these two pages
+render:
+  - EDA.qmd
+  - Modeling.qmd

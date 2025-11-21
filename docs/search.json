@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "EDA.html",
+    "href": "EDA.html",
+    "title": "Exploratory Data Analysis: Diabetes Health Indicators",
+    "section": "",
+    "text": "# Load required packages\nlibrary(tidyverse)   # data wrangling, plots\nlibrary(janitor)     # clean variable names\nlibrary(skimr)       # data summaries\n\n# Set a reproducible seed\nset.seed(123)"
+  },
+  {
+    "objectID": "EDA.html#introduction",
+    "href": "EDA.html#introduction",
+    "title": "Exploratory Data Analysis: Diabetes Health Indicators",
+    "section": "Introduction",
+    "text": "Introduction\nIn this analysis, I explore the Diabetes Health Indicators dataset (diabetes_binary_health_indicators_BRFSS2015.csv), which is based on the Behavioral Risk Factor Surveillance System (BRFSS) survey.\n\nResponse variable: Diabetes_binary\n\n0 = No diabetes\n1 = Diabetes\n\nGoal of EDA:\n\nUnderstand the distribution of key health indicators.\nExplore how these indicators relate to diabetes status.\nPrepare for building predictive models in the Modeling document.\n\n\nI focus on the following predictors (a subset of the full data): - HighBP – high blood pressure - HighChol – high cholesterol - BMI – body mass index (numeric) - Smoker – has smoked at least 100 cigarettes - PhysActivity – physical activity in past 30 days - GenHlth – general health (1 = excellent to 5 = poor) - MentHlth – days of poor mental health - PhysHlth – days of poor physical health - DiffWalk – serious difficulty walking - Sex – biological sex - Age – age category - Income – income category\nThese variables will form the basis of my later predictive modeling."
+  },
+  {
+    "objectID": "EDA.html#data-import-and-cleaning",
+    "href": "EDA.html#data-import-and-cleaning",
+    "title": "Exploratory Data Analysis: Diabetes Health Indicators",
+    "section": "Data Import and Cleaning",
+    "text": "Data Import and Cleaning"
+  }
+]

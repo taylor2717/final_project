@@ -1,0 +1,56 @@
+---
+title: "Exploratory Data Analysis: Diabetes Health Indicators"
+author: "Taylor Burke"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+```{r setup}
+#| label: setup
+#| include: true
+
+# Load required packages
+library(tidyverse)   # data wrangling, plots
+library(janitor)     # clean variable names
+library(skimr)       # data summaries
+
+# Set a reproducible seed
+set.seed(123)
+```
+
+## Introduction
+
+In this analysis, I explore the Diabetes Health Indicators dataset
+(diabetes_binary_health_indicators_BRFSS2015.csv), which is based on the
+Behavioral Risk Factor Surveillance System (BRFSS) survey.
+
+- Response variable: Diabetes_binary
+  - 0 = No diabetes
+  - 1 = Diabetes
+- Goal of EDA:
+  - Understand the distribution of key health indicators.
+  - Explore how these indicators relate to diabetes status.
+  - Prepare for building predictive models in the Modeling document.
+
+I focus on the following predictors (a subset of the full data):
+- HighBP – high blood pressure
+- HighChol – high cholesterol
+- BMI – body mass index (numeric)
+- Smoker – has smoked at least 100 cigarettes
+- PhysActivity – physical activity in past 30 days
+- GenHlth – general health (1 = excellent to 5 = poor)
+- MentHlth – days of poor mental health
+- PhysHlth – days of poor physical health
+- DiffWalk – serious difficulty walking
+- Sex – biological sex
+- Age – age category
+- Income – income category
+
+These variables will form the basis of my later predictive modeling.
+
+## Data Import and Cleaning
