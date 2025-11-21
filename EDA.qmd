@@ -25,9 +25,7 @@ set.seed(123)
 
 ## Introduction
 
-In this analysis, I explore the Diabetes Health Indicators dataset
-(diabetes_binary_health_indicators_BRFSS2015.csv), which is based on the
-Behavioral Risk Factor Surveillance System (BRFSS) survey.
+In this analysis, I explore the Diabetes Health Indicators dataset (diabetes_binary_health_indicators_BRFSS2015.csv), which is based on the Behavioral Risk Factor Surveillance System (BRFSS) survey.
 
 - Response variable: Diabetes_binary
   - 0 = No diabetes
@@ -38,18 +36,19 @@ Behavioral Risk Factor Surveillance System (BRFSS) survey.
   - Prepare for building predictive models in the Modeling document.
 
 I focus on the following predictors (a subset of the full data):
-- HighBP – high blood pressure
-- HighChol – high cholesterol
-- BMI – body mass index (numeric)
-- Smoker – has smoked at least 100 cigarettes
-- PhysActivity – physical activity in past 30 days
-- GenHlth – general health (1 = excellent to 5 = poor)
-- MentHlth – days of poor mental health
-- PhysHlth – days of poor physical health
-- DiffWalk – serious difficulty walking
-- Sex – biological sex
-- Age – age category
-- Income – income category
+
+  - HighBP – high blood pressure
+  - HighChol – high cholesterol
+  - BMI – body mass index (numeric)
+  - Smoker – has smoked at least 100 cigarettes
+  - PhysActivity – physical activity in past 30 days
+  - GenHlth – general health (1 = excellent to 5 = poor)
+  - MentHlth – days of poor mental health
+  - PhysHlth – days of poor physical health
+  - DiffWalk – serious difficulty walking
+  - Sex – biological sex
+  - Age – age category
+  - Income – income category
 
 These variables will form the basis of my later predictive modeling.
 
@@ -164,3 +163,145 @@ title = "Counts of Diabetes vs. No Diabetes"
 
 This plot shows class imbalance (typically many more NoDiabetes than Diabetes cases),
 which I must keep in mind when choosing modeling strategies and evaluation metrics such as log-loss.
+
+## Univariate Summaries of Key Predictors
+
+### Numeric Variables (BMI, Mental & Physical Health Days)
+
+```{r}
+#| label: numeric-summaries
+
+diabetes %>%
+select(bmi, ment_hlth, phys_hlth) %>%
+skim()
+```
+```{r}
+#| label: bmi-hist
+#| fig.cap: "Histogram of BMI"
+
+diabetes %>%
+ggplot(aes(x = bmi)) +
+geom_histogram(bins = 30) +
+labs(
+title = "Distribution of BMI",
+x = "BMI",
+y = "Count"
+)
+```
+
+I expect BMI to be right-skewed and generally higher in individuals with diabetes.
+Understanding its distribution helps inform whether transformations might be needed.
+
+### Categorical Variables
+
+```{r}
+#| label: cat-summaries
+
+diabetes %>%
+select(high_bp, high_chol, smoker, phys_activity, diff_walk,
+sex, gen_hlth, age, income) %>%
+map(~ count(as.data.frame(.), .))  # quick counts
+```
+
+The output shows the frequency of each category for these predictors.
+
+## Bivariate Relationships With Diabetes
+
+### BMI vs Diabetes Status
+
+```{r}
+#| label: bmi-diabetes
+#| fig.cap: "BMI by Diabetes Status"
+
+diabetes %>%
+ggplot(aes(x = diabetes_binary, y = bmi)) +
+geom_boxplot() +
+labs(
+title = "BMI by Diabetes Status",
+x = "Diabetes Status",
+y = "BMI"
+)
+
+```
+
+I typically see higher median BMI among those with diabetes, suggesting BMI is a strong predictor for the modeling stage.
+
+### High Blood Pressure and Diabetes
+
+```{r}
+#| label: highbp-diabetes
+#| fig.cap: "Proportion with High Blood Pressure by Diabetes Status"
+
+diabetes %>%
+count(diabetes_binary, high_bp) %>%
+group_by(diabetes_binary) %>%
+mutate(prop = n / sum(n)) %>%
+ggplot(aes(x = diabetes_binary, y = prop, fill = high_bp)) +
+geom_col(position = "fill") +
+scale_y_continuous(labels = scales::percent) +
+labs(
+title = "High Blood Pressure Status by Diabetes Outcome",
+x = "Diabetes Status",
+y = "Proportion",
+fill = "High BP"
+)
+```
+The proportion of individuals with high blood pressure tends to be higher among those with diabetes,
+which indicates a strong association and usefulness as a predictor.
+
+### General Health and Diabetes
+
+```{r}
+#| label: genhlth-diabetes
+#| fig.cap: "General Health vs Diabetes Status"
+
+diabetes %>%
+ggplot(aes(x = gen_hlth, fill = diabetes_binary)) +
+geom_bar(position = "fill") +
+scale_y_continuous(labels = scales::percent) +
+labs(
+title = "General Health and Diabetes Outcome",
+x = "Self-reported General Health",
+y = "Proportion",
+fill = "Diabetes Status"
+)
+
+```
+Those reporting worse general health (Fair, Poor) appear more likely to have diabetes,
+which is consistent with medical expectations.
+
+### Physical Activity and Diabetes
+
+```{r}
+#| label: physact-diabetes
+#| fig.cap: "Physical Activity vs Diabetes Status"
+
+diabetes %>%
+ggplot(aes(x = phys_activity, fill = diabetes_binary)) +
+geom_bar(position = "fill") +
+scale_y_continuous(labels = scales::percent) +
+labs(
+title = "Physical Activity and Diabetes Outcome",
+x = "Physical Activity in Past 30 Days",
+y = "Proportion",
+fill = "Diabetes Status"
+)
+```
+
+Individuals with diabetes are more likely to report no recent physical activity.
+This supports including physical activity as a predictor.
+
+## Summary and Transition to Modeling
+
+In this EDA, I:
+  - Cleaned the dataset and converted key variables to factors.
+  - Checked for missingness and outcome imbalance.
+  - Explored distributions and relationships between predictors and diabetes status.
+
+Several predictors (e.g., BMI, HighBP, GenHlth, PhysActivity, DiffWalk)
+show meaningful associations with diabetes, making them good candidates for a predictive model.
+
+Next, I will:
+  - Split the data into training and test sets.
+  - Fit and compare classification tree and random forest models using log-loss.
+  - Select a final “best” model for deployment as an API.
