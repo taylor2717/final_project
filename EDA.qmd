@@ -54,3 +54,113 @@ I focus on the following predictors (a subset of the full data):
 These variables will form the basis of my later predictive modeling.
 
 ## Data Import and Cleaning
+
+
+```{r}
+#| label: import-data
+#| message: true
+
+# Read data from folder
+raw_diabetes <- read_csv(
+"diabetes_binary_health_indicators_BRFSS2015.csv"
+)
+
+# Clean column names to be snake_case
+diabetes <- raw_diabetes %>%
+clean_names()
+
+# Inspect the structure
+glimpse(diabetes)
+```
+### Converting Variables to Factors
+
+Many columns are coded as 0/1 or numeric categories, but conceptually are categorical.
+Here I convert them to factors with meaningful labels where appropriate.
+
+```{r}
+#| label: factor-conversion
+
+diabetes <- diabetes %>%
+mutate(
+# Response as factor
+diabetes_binary = factor(diabetes_binary,
+levels = c(0, 1),
+labels = c("NoDiabetes", "Diabetes")),
+high_bp   = factor(high_bp,   levels = c(0, 1),
+                   labels = c("NoHighBP", "HighBP")),
+high_chol = factor(high_chol, levels = c(0, 1),
+                   labels = c("NoHighChol", "HighChol")),
+smoker    = factor(smoker,    levels = c(0, 1),
+                   labels = c("NonSmoker", "Smoker")),
+phys_activity = factor(phys_activity, levels = c(0, 1),
+                       labels = c("NoPA", "PhysActive")),
+diff_walk = factor(diff_walk, levels = c(0, 1),
+                   labels = c("NoDiffWalk", "DiffWalk")),
+sex       = factor(sex,       levels = c(0, 1),
+                   labels = c("Female", "Male")),
+
+# General health coded 1–5 (1 = excellent, 5 = poor)
+gen_hlth = factor(gen_hlth,
+                  levels = 1:5,
+                  labels = c("Excellent", "VeryGood", "Good",
+                             "Fair", "Poor")),
+
+# Age categories and income categories as ordered factors
+age = factor(age, ordered = TRUE),
+income = factor(income, ordered = TRUE)
+)
+
+# Quick look after conversions
+diabetes %>%
+select(diabetes_binary, high_bp, high_chol, smoker,
+phys_activity, diff_walk, sex, gen_hlth, age, income) %>%
+summary()
+```
+### Missingness
+
+Before any analysis, I check for missing values.
+
+```{r}
+#| label: missingness
+
+# Count missing values per column
+
+missing_summary <- diabetes %>%
+summarise(across(everything(), ~ sum(is.na(.)))) %>%
+pivot_longer(everything(),
+names_to = "variable",
+values_to = "n_missing") %>%
+arrange(desc(n_missing))
+
+missing_summary
+```
+
+## Overall Outcome Balance
+
+First, I check how many respondents are labeled with diabetes vs. no diabetes.
+
+```{r}
+#| label: outcome-balance
+
+diabetes %>%
+count(diabetes_binary) %>%
+mutate(prop = n / sum(n))
+```
+
+### Bar Plot of Outcome
+```{r}
+#| label: outcome-plot
+#| fig.cap: "Distribution of Diabetes Outcomes"
+
+diabetes %>%
+ggplot(aes(x = diabetes_binary)) +
+geom_bar() +
+labs(
+x = "Diabetes Status",
+y = "Count",
+title = "Counts of Diabetes vs. No Diabetes"
+)
+```
+
+This plot shows class imbalance (typically many more NoDiabetes than Diabetes cases),
+which I must keep in mind when choosing modeling strategies and evaluation metrics such as log-loss.
