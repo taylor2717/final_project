@@ -46,6 +46,6 @@
     "href": "EDA.html#summary-and-transition-to-modeling",
     "title": "Exploratory Data Analysis: Diabetes Health Indicators",
     "section": "Summary and Transition to Modeling",
-    "text": "Summary and Transition to Modeling\nIn this EDA, I: - Cleaned the dataset and converted key variables to factors. - Checked for missingness and outcome imbalance. - Explored distributions and relationships between predictors and diabetes status.\nSeveral predictors (e.g., BMI, HighBP, GenHlth, PhysActivity, DiffWalk) show meaningful associations with diabetes, making them good candidates for a predictive model.\nNext, I will: - Split the data into training and test sets. - Fit and compare classification tree and random forest models using log-loss. - Select a final “best” model for deployment as an API."
+    "text": "Summary and Transition to Modeling\nIn this EDA, I:\n\nCleaned the dataset and converted key variables to factors.\nChecked for missingness and outcome imbalance.\nExplored distributions and relationships between predictors and diabetes status.\n\nSeveral predictors (e.g., BMI, HighBP, GenHlth, PhysActivity, DiffWalk) show meaningful associations with diabetes, making them good candidates for a predictive model.\nNext, I will:\n\nSplit the data into training and test sets.\nFit and compare classification tree and random forest models using log-loss.\nSelect a final “best” model for deployment as an API."
   }
 ]

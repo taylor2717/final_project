@@ -294,6 +294,7 @@ This supports including physical activity as a predictor.
 ## Summary and Transition to Modeling
 
 In this EDA, I:
+
   - Cleaned the dataset and converted key variables to factors.
   - Checked for missingness and outcome imbalance.
   - Explored distributions and relationships between predictors and diabetes status.
@@ -302,6 +303,7 @@ Several predictors (e.g., BMI, HighBP, GenHlth, PhysActivity, DiffWalk)
 show meaningful associations with diabetes, making them good candidates for a predictive model.
 
 Next, I will:
+
   - Split the data into training and test sets.
   - Fit and compare classification tree and random forest models using log-loss.
   - Select a final “best” model for deployment as an API.
