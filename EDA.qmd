@@ -25,32 +25,33 @@ set.seed(123)
 
 ## Introduction
 
-In this analysis, I explore the Diabetes Health Indicators dataset (diabetes_binary_health_indicators_BRFSS2015.csv), which is based on the Behavioral Risk Factor Surveillance System (BRFSS) survey.
+In this analysis, I explore the **Diabetes Health Indicators** dataset (`diabetes_binary_health_indicators_BRFSS2015.csv`), which is based on the Behavioral Risk Factor Surveillance System (BRFSS) survey of adult health behaviors and conditions.
 
-- Response variable: Diabetes_binary
-  - 0 = No diabetes
-  - 1 = Diabetes
-- Goal of EDA:
-  - Understand the distribution of key health indicators.
-  - Explore how these indicators relate to diabetes status.
-  - Prepare for building predictive models in the Modeling document.
+- **Response variable:** `Diabetes_binary`  
+  - `0` = No diabetes  
+  - `1` = Diabetes  
 
 I focus on the following predictors (a subset of the full data):
 
-  - HighBP – high blood pressure
-  - HighChol – high cholesterol
-  - BMI – body mass index (numeric)
-  - Smoker – has smoked at least 100 cigarettes
-  - PhysActivity – physical activity in past 30 days
-  - GenHlth – general health (1 = excellent to 5 = poor)
-  - MentHlth – days of poor mental health
-  - PhysHlth – days of poor physical health
-  - DiffWalk – serious difficulty walking
-  - Sex – biological sex
-  - Age – age category
-  - Income – income category
+- `HighBP` – high blood pressure  
+- `HighChol` – high cholesterol  
+- `BMI` – body mass index (numeric)  
+- `Smoker` – has smoked at least 100 cigarettes  
+- `PhysActivity` – physical activity in past 30 days  
+- `GenHlth` – general health (1 = excellent to 5 = poor)  
+- `MentHlth` – days of poor mental health  
+- `PhysHlth` – days of poor physical health  
+- `DiffWalk` – serious difficulty walking  
+- `Sex` – biological sex  
+- `Age` – age category  
+- `Income` – income category  
 
-These variables will form the basis of my later predictive modeling.
+**Purpose of this EDA/Modeling Goals:**  
+
+- Describe the distributions of key health indicators in this sample.  
+- Explore how these indicators relate to diabetes status (`Diabetes_binary`).  
+- Inform the choice and specification of predictive models that will be built in the accompanying *Modeling* document, where the ultimate goal is to predict diabetes status from these health indicators.
+
 
 ## Data Import and Cleaning
 
@@ -141,6 +142,7 @@ First, I check how many respondents are labeled with diabetes vs. no diabetes.
 ```{r}
 #| label: outcome-balance
 
+# Count how many individuals fall into each diabetes class
 diabetes %>%
 count(diabetes_binary) %>%
 mutate(prop = n / sum(n))
@@ -151,6 +153,7 @@ mutate(prop = n / sum(n))
 #| label: outcome-plot
 #| fig.cap: "Distribution of Diabetes Outcomes"
 
+# Visualize the distribution of diabetes vs. no-diabetes cases
 diabetes %>%
 ggplot(aes(x = diabetes_binary)) +
 geom_bar() +
@@ -161,24 +164,35 @@ title = "Counts of Diabetes vs. No Diabetes"
 )
 ```
 
-This plot shows class imbalance (typically many more NoDiabetes than Diabetes cases),
-which I must keep in mind when choosing modeling strategies and evaluation metrics such as log-loss.
+This plot highlights the strong class imbalance present in the dataset: roughly 86% of respondents report no diabetes, while about 14% report having diabetes. This tells us two important things about the data. First, diabetes is much less common in this BRFSS sample, which is expected but important to quantify. Second, this imbalance will directly affect modeling, because models trained on imbalanced data tend to favor the majority class unless techniques like log-loss or proper tuning are used.
+
+From a data-relationship standpoint, this imbalance also indicates that any predictor-outcome relationships we observe later need to be interpreted with this context—signals associated with diabetes may appear weaker simply because the positive class is much smaller. This reinforces why careful evaluation and appropriate metrics will be important in the modeling stage.
+
 
 ## Univariate Summaries of Key Predictors
 
+Before examining how predictors relate to diabetes, it is important to understand each variable on its own. In this section, I explore the distributions of key numeric and categorical predictors to identify typical ranges, levels of variability, and any imbalances in the data. These summaries provide context for interpreting the later bivariate analyses and help highlight variables that may contribute more strongly to distinguishing individuals with and without diabetes. Understanding these one-variable patterns also gives early insight into potential modeling challenges, such as skewed distributions, dominant categories, or low-variability predictors.
+
 ### Numeric Variables (BMI, Mental & Physical Health Days)
+
+The skim summary allows me to examine the distributions of the three numeric variables I am focusing on: BMI, the number of days of poor mental health, and the number of days of poor physical health. All three variables show no missingness, and BMI displays a notably smaller standard deviation compared to the mental and physical health measures, indicating that BMI values are more concentrated while the health-day variables are more spread out. This preliminary look helps identify the natural ranges of these predictors and highlights which ones may contain more variation to explain differences in diabetes status.
 
 ```{r}
 #| label: numeric-summaries
-
+# Generate summary statistics for key numeric health indicators
 diabetes %>%
 select(bmi, ment_hlth, phys_hlth) %>%
 skim()
 ```
+#### BMI Histogram
+
+BMI is one of the most important clinical indicators of metabolic health, so examining its distribution on its own provides valuable context before comparing it across diabetes groups. Looking at the shape, spread, and skewness of BMI values helps reveal how weight-related differences might contribute to diabetes risk and also signals whether nonlinear modeling techniques may be appropriate. The histogram below shows how BMI is distributed across the entire sample.
+
 ```{r}
 #| label: bmi-hist
 #| fig.cap: "Histogram of BMI"
 
+# Plot the distribution of BMI values across the entire sample
 diabetes %>%
 ggplot(aes(x = bmi)) +
 geom_histogram(bins = 30) +
@@ -188,24 +202,35 @@ x = "BMI",
 y = "Count"
 )
 ```
-
-I expect BMI to be right-skewed and generally higher in individuals with diabetes.
-Understanding its distribution helps inform whether transformations might be needed.
+The histogram of BMI shows a right-skewed distribution, with most individuals falling between a BMI of roughly 20 and 35, but with a long tail extending to very high BMI values above 50. This skewness is clinically reasonable, as extremely high BMIs are less common but meaningful. Because diabetes risk is known to increase with BMI, this distribution suggests that BMI may be an important predictor in our modeling stage. The presence of a long right tail also indicates the potential value of tree-based models, which can naturally capture nonlinear relationships without requiring transformation.
 
 ### Categorical Variables
+
+The quick frequency tables summarize the distributions of all of the key categorical predictors, including high blood pressure, high cholesterol, smoking status, physical activity, difficulty walking, sex, general health, age category, and income. 
 
 ```{r}
 #| label: cat-summaries
 
+# Display frequency counts for major categorical predictors
 diabetes %>%
 select(high_bp, high_chol, smoker, phys_activity, diff_walk,
 sex, gen_hlth, age, income) %>%
 map(~ count(as.data.frame(.), .))  # quick counts
 ```
 
-The output shows the frequency of each category for these predictors.
+Most variables show strong imbalance between their categories — for example, far more individuals report **NoHighBP** than **HighBP**, and physical activity (**PhysActive**) is much more common than inactivity (**NoPA**). These imbalances reflect realistic population patterns, but they also signal that some predictors may carry strong associations with diabetes simply due to the prevalence of certain health behaviors or conditions.
+
+Understanding these distributions is important for two reasons:
+
+1. **Modeling impact:** Tree-based models and random forests handle categorical imbalance well, but predictors with highly dominant categories may still contribute unevenly.  
+2. **Relationship context:** Categories such as “DiffWalk,” “Poor” general health, or “HighBP” are expected to relate to chronic conditions, including diabetes. Seeing their frequencies now provides context for why they may appear as strong predictors later in the bivariate analysis and model fitting.
+
+Together, these numeric and categorical summaries provide a foundational understanding of the health indicators in this dataset and show early signs of meaningful differences between individuals with and without diabetes.
+
 
 ## Bivariate Relationships With Diabetes
+
+In this section, I explore how some of the key predictors relate directly to the diabetes outcome. While earlier summaries focused on understanding individual variables on their own, the goal here is to examine how differences in health behaviors, conditions, and demographic factors manifest across diabetes groups. These visualizations help identify which predictors show the strongest separation between individuals with and without diabetes and therefore hold the greatest potential predictive value. Understanding these relationships provides a crucial bridge between EDA and the modeling stage, guiding expectations about which variables may drive model performance and how different modeling approaches might capture these patterns.
 
 ### BMI vs Diabetes Status
 
@@ -213,6 +238,7 @@ The output shows the frequency of each category for these predictors.
 #| label: bmi-diabetes
 #| fig.cap: "BMI by Diabetes Status"
 
+# Compare BMI distributions between diabetes and non-diabetes groups
 diabetes %>%
 ggplot(aes(x = diabetes_binary, y = bmi)) +
 geom_boxplot() +
@@ -223,8 +249,7 @@ y = "BMI"
 )
 
 ```
-
-I typically see higher median BMI among those with diabetes, suggesting BMI is a strong predictor for the modeling stage.
+The boxplot above comparing BMI between individuals with and without diabetes shows a clear difference: those with diabetes tend to have noticeably higher BMI values on average. The median BMI is shifted upward in the diabetes group, and the overall spread is larger, reflecting greater variability among individuals diagnosed with diabetes. This alignment with medical expectations reinforces BMI as an important predictor. For modeling, this suggests a potentially nonlinear relationship — individuals with moderate or high BMI may experience a sharp increase in diabetes risk, which tree-based models can naturally capture.
 
 ### High Blood Pressure and Diabetes
 
@@ -232,6 +257,7 @@ I typically see higher median BMI among those with diabetes, suggesting BMI is a
 #| label: highbp-diabetes
 #| fig.cap: "Proportion with High Blood Pressure by Diabetes Status"
 
+# Examine the relationship between high blood pressure and diabetes status
 diabetes %>%
 count(diabetes_binary, high_bp) %>%
 group_by(diabetes_binary) %>%
@@ -246,8 +272,7 @@ y = "Proportion",
 fill = "High BP"
 )
 ```
-The proportion of individuals with high blood pressure tends to be higher among those with diabetes,
-which indicates a strong association and usefulness as a predictor.
+The proportional bar chart above indicates that high blood pressure is much more common among individuals with diabetes than among those without. While the majority of the full sample reports no high blood pressure, the share of HighBP cases is substantially higher in the diabetes group. This pattern suggests a strong positive relationship: people with elevated blood pressure are more likely to also have diabetes. Given the strength and clarity of this relationship, high blood pressure may be among the most influential predictors in the modeling phase.
 
 ### General Health and Diabetes
 
@@ -255,6 +280,7 @@ which indicates a strong association and usefulness as a predictor.
 #| label: genhlth-diabetes
 #| fig.cap: "General Health vs Diabetes Status"
 
+# Visualize how self-reported general health differs by diabetes outcome
 diabetes %>%
 ggplot(aes(x = gen_hlth, fill = diabetes_binary)) +
 geom_bar(position = "fill") +
@@ -267,8 +293,7 @@ fill = "Diabetes Status"
 )
 
 ```
-Those reporting worse general health (Fair, Poor) appear more likely to have diabetes,
-which is consistent with medical expectations.
+When examining general health categories, the distribution shifts dramatically between diabetes groups. Individuals reporting Excellent or VeryGood health are far more prevalent in the non-diabetes group, whereas categories such as Fair and Poor are noticeably over-represented in the diabetes group. This pattern supports the intuitive idea that poorer overall health aligns with chronic conditions like diabetes. It also suggests that the GenHlth variable captures a broad combination of lifestyle and medical risk factors, making it valuable for prediction.
 
 ### Physical Activity and Diabetes
 
@@ -276,6 +301,7 @@ which is consistent with medical expectations.
 #| label: physact-diabetes
 #| fig.cap: "Physical Activity vs Diabetes Status"
 
+# Explore how physical activity levels vary across diabetes groups
 diabetes %>%
 ggplot(aes(x = phys_activity, fill = diabetes_binary)) +
 geom_bar(position = "fill") +
@@ -288,22 +314,15 @@ fill = "Diabetes Status"
 )
 ```
 
-Individuals with diabetes are more likely to report no recent physical activity.
-This supports including physical activity as a predictor.
+The physical activity comparison reveals that those with diabetes are less likely to report recent physical activity. While physical activity is common in the dataset as a whole, the share of NoPA cases increases among individuals with diabetes. This indicates a meaningful behavioral difference and highlights physical inactivity as a potential risk indicator. This relationship may complement predictors like BMI and blood pressure, offering a lifestyle-based signal in the model.
 
-## Summary and Transition to Modeling
+## Summary of Findings and Transition to Modeling
 
-In this EDA, I:
+This exploratory analysis provided a detailed look at how key health indicators differ between individuals with and without diabetes in the BRFSS dataset. Several variables displayed strong and meaningful relationships with diabetes status. In particular, individuals with diabetes tended to have higher BMI values, were more likely to report high blood pressure, were less physically active, and reported poorer overall health. These patterns align with clinical expectations and suggest that multiple lifestyle and health-condition indicators contribute to diabetes risk.
 
-  - Cleaned the dataset and converted key variables to factors.
-  - Checked for missingness and outcome imbalance.
-  - Explored distributions and relationships between predictors and diabetes status.
+The categorical summaries showed substantial imbalance across many predictors, but the direction of those imbalances was informative: categories representing poorer health or more limited mobility were consistently more common among those with diabetes. Meanwhile, variables like age, income, and sex appeared to have weaker but still potentially relevant associations, especially when combined with the stronger health-related predictors.
 
-Several predictors (e.g., BMI, HighBP, GenHlth, PhysActivity, DiffWalk)
-show meaningful associations with diabetes, making them good candidates for a predictive model.
+Overall, the EDA results highlight which predictors are most promising for building an accurate model and reinforce the need for modeling techniques that can capture nonlinear and interaction-based relationships. With this understanding, the next step is to formally evaluate predictive models using a training/test split and compare performance across a classification tree and a random forest to identify the best approach.
 
-Next, I will:
+[Click here for the Modeling Page](Modeling.qmd)
 
-  - Split the data into training and test sets.
-  - Fit and compare classification tree and random forest models using log-loss.
-  - Select a final “best” model for deployment as an API.

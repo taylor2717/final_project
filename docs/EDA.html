@@ -168,7 +168,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#general-health-and-diabetes" id="toc-general-health-and-diabetes" class="nav-link" data-scroll-target="#general-health-and-diabetes">General Health and Diabetes</a></li>
   <li><a href="#physical-activity-and-diabetes" id="toc-physical-activity-and-diabetes" class="nav-link" data-scroll-target="#physical-activity-and-diabetes">Physical Activity and Diabetes</a></li>
   </ul></li>
-  <li><a href="#summary-and-transition-to-modeling" id="toc-summary-and-transition-to-modeling" class="nav-link" data-scroll-target="#summary-and-transition-to-modeling">Summary and Transition to Modeling</a></li>
+  <li><a href="#summary-of-findings-and-transition-to-modeling" id="toc-summary-of-findings-and-transition-to-modeling" class="nav-link" data-scroll-target="#summary-of-findings-and-transition-to-modeling">Summary of Findings and Transition to Modeling</a></li>
   </ul>
 </nav>
     </div>
@@ -211,36 +211,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>In this analysis, I explore the Diabetes Health Indicators dataset (diabetes_binary_health_indicators_BRFSS2015.csv), which is based on the Behavioral Risk Factor Surveillance System (BRFSS) survey.</p>
+<p>In this analysis, I explore the <strong>Diabetes Health Indicators</strong> dataset (<code>diabetes_binary_health_indicators_BRFSS2015.csv</code>), which is based on the Behavioral Risk Factor Surveillance System (BRFSS) survey of adult health behaviors and conditions.</p>
 <ul>
-<li>Response variable: Diabetes_binary
+<li><strong>Response variable:</strong> <code>Diabetes_binary</code>
 <ul>
-<li>0 = No diabetes</li>
-<li>1 = Diabetes</li>
-</ul></li>
-<li>Goal of EDA:
-<ul>
-<li>Understand the distribution of key health indicators.</li>
-<li>Explore how these indicators relate to diabetes status.</li>
-<li>Prepare for building predictive models in the Modeling document.</li>
+<li><code>0</code> = No diabetes<br>
+</li>
+<li><code>1</code> = Diabetes</li>
 </ul></li>
 </ul>
 <p>I focus on the following predictors (a subset of the full data):</p>
 <ul>
-<li>HighBP – high blood pressure</li>
-<li>HighChol – high cholesterol</li>
-<li>BMI – body mass index (numeric)</li>
-<li>Smoker – has smoked at least 100 cigarettes</li>
-<li>PhysActivity – physical activity in past 30 days</li>
-<li>GenHlth – general health (1 = excellent to 5 = poor)</li>
-<li>MentHlth – days of poor mental health</li>
-<li>PhysHlth – days of poor physical health</li>
-<li>DiffWalk – serious difficulty walking</li>
-<li>Sex – biological sex</li>
-<li>Age – age category</li>
-<li>Income – income category</li>
+<li><code>HighBP</code> – high blood pressure<br>
+</li>
+<li><code>HighChol</code> – high cholesterol<br>
+</li>
+<li><code>BMI</code> – body mass index (numeric)<br>
+</li>
+<li><code>Smoker</code> – has smoked at least 100 cigarettes<br>
+</li>
+<li><code>PhysActivity</code> – physical activity in past 30 days<br>
+</li>
+<li><code>GenHlth</code> – general health (1 = excellent to 5 = poor)<br>
+</li>
+<li><code>MentHlth</code> – days of poor mental health<br>
+</li>
+<li><code>PhysHlth</code> – days of poor physical health<br>
+</li>
+<li><code>DiffWalk</code> – serious difficulty walking<br>
+</li>
+<li><code>Sex</code> – biological sex<br>
+</li>
+<li><code>Age</code> – age category<br>
+</li>
+<li><code>Income</code> – income category</li>
 </ul>
-<p>These variables will form the basis of my later predictive modeling.</p>
+<p><strong>Purpose of this EDA/Modeling Goals:</strong></p>
+<ul>
+<li>Describe the distributions of key health indicators in this sample.<br>
+</li>
+<li>Explore how these indicators relate to diabetes status (<code>Diabetes_binary</code>).<br>
+</li>
+<li>Inform the choice and specification of predictive models that will be built in the accompanying <em>Modeling</em> document, where the ultimate goal is to predict diabetes status from these health indicators.</li>
+</ul>
 </section>
 <section id="data-import-and-cleaning" class="level2">
 <h2 class="anchored" data-anchor-id="data-import-and-cleaning">Data Import and Cleaning</h2>
@@ -395,9 +408,10 @@ $ income                 &lt;dbl&gt; 3, 1, 8, 6, 4, 8, 7, 4, 1, 3, 8, 1, 7, 6, 2
 <h2 class="anchored" data-anchor-id="overall-outcome-balance">Overall Outcome Balance</h2>
 <p>First, I check how many respondents are labeled with diabetes vs.&nbsp;no diabetes.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(diabetes_binary) <span class="sc">%&gt;%</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Count how many individuals fall into each diabetes class</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(diabetes_binary) <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 3
   diabetes_binary      n  prop
@@ -409,14 +423,15 @@ $ income                 &lt;dbl&gt; 3, 1, 8, 6, 4, 8, 7, 4, 1, 3, 8, 1, 7, 6, 2
 <section id="bar-plot-of-outcome" class="level3">
 <h3 class="anchored" data-anchor-id="bar-plot-of-outcome">Bar Plot of Outcome</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> diabetes_binary)) <span class="sc">+</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_bar</span>() <span class="sc">+</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Diabetes Status"</span>,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Count"</span>,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"Counts of Diabetes vs. No Diabetes"</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the distribution of diabetes vs. no-diabetes cases</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> diabetes_binary)) <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Diabetes Status"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Count"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"Counts of Diabetes vs. No Diabetes"</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -426,17 +441,21 @@ $ income                 &lt;dbl&gt; 3, 1, 8, 6, 4, 8, 7, 4, 1, 3, 8, 1, 7, 6, 2
 </div>
 </div>
 </div>
-<p>This plot shows class imbalance (typically many more NoDiabetes than Diabetes cases), which I must keep in mind when choosing modeling strategies and evaluation metrics such as log-loss.</p>
+<p>This plot highlights the strong class imbalance present in the dataset: roughly 86% of respondents report no diabetes, while about 14% report having diabetes. This tells us two important things about the data. First, diabetes is much less common in this BRFSS sample, which is expected but important to quantify. Second, this imbalance will directly affect modeling, because models trained on imbalanced data tend to favor the majority class unless techniques like log-loss or proper tuning are used.</p>
+<p>From a data-relationship standpoint, this imbalance also indicates that any predictor-outcome relationships we observe later need to be interpreted with this context—signals associated with diabetes may appear weaker simply because the positive class is much smaller. This reinforces why careful evaluation and appropriate metrics will be important in the modeling stage.</p>
 </section>
 </section>
 <section id="univariate-summaries-of-key-predictors" class="level2">
 <h2 class="anchored" data-anchor-id="univariate-summaries-of-key-predictors">Univariate Summaries of Key Predictors</h2>
+<p>Before examining how predictors relate to diabetes, it is important to understand each variable on its own. In this section, I explore the distributions of key numeric and categorical predictors to identify typical ranges, levels of variability, and any imbalances in the data. These summaries provide context for interpreting the later bivariate analyses and help highlight variables that may contribute more strongly to distinguishing individuals with and without diabetes. Understanding these one-variable patterns also gives early insight into potential modeling challenges, such as skewed distributions, dominant categories, or low-variability predictors.</p>
 <section id="numeric-variables-bmi-mental-physical-health-days" class="level3">
 <h3 class="anchored" data-anchor-id="numeric-variables-bmi-mental-physical-health-days">Numeric Variables (BMI, Mental &amp; Physical Health Days)</h3>
+<p>The skim summary allows me to examine the distributions of the three numeric variables I am focusing on: BMI, the number of days of poor mental health, and the number of days of poor physical health. All three variables show no missingness, and BMI displays a notably smaller standard deviation compared to the mental and physical health measures, indicating that BMI values are more concentrated while the health-day variables are more spread out. This preliminary look helps identify the natural ranges of these predictors and highlights which ones may contain more variation to explain differences in diabetes status.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(bmi, ment_hlth, phys_hlth) <span class="sc">%&gt;%</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate summary statistics for key numeric health indicators</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(bmi, ment_hlth, phys_hlth) <span class="sc">%&gt;%</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <caption>Data summary</caption>
@@ -549,15 +568,19 @@ $ income                 &lt;dbl&gt; 3, 1, 8, 6, 4, 8, 7, 4, 1, 3, 8, 1, 7, 6, 2
 </table>
 </div>
 </div>
+<section id="bmi-histogram" class="level4">
+<h4 class="anchored" data-anchor-id="bmi-histogram">BMI Histogram</h4>
+<p>BMI is one of the most important clinical indicators of metabolic health, so examining its distribution on its own provides valuable context before comparing it across diabetes groups. Looking at the shape, spread, and skewness of BMI values helps reveal how weight-related differences might contribute to diabetes risk and also signals whether nonlinear modeling techniques may be appropriate. The histogram below shows how BMI is distributed across the entire sample.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> bmi)) <span class="sc">+</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"Distribution of BMI"</span>,</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"BMI"</span>,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Count"</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the distribution of BMI values across the entire sample</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> bmi)) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"Distribution of BMI"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"BMI"</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Count"</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -567,15 +590,18 @@ $ income                 &lt;dbl&gt; 3, 1, 8, 6, 4, 8, 7, 4, 1, 3, 8, 1, 7, 6, 2
 </div>
 </div>
 </div>
-<p>I expect BMI to be right-skewed and generally higher in individuals with diabetes. Understanding its distribution helps inform whether transformations might be needed.</p>
+<p>The histogram of BMI shows a right-skewed distribution, with most individuals falling between a BMI of roughly 20 and 35, but with a long tail extending to very high BMI values above 50. This skewness is clinically reasonable, as extremely high BMIs are less common but meaningful. Because diabetes risk is known to increase with BMI, this distribution suggests that BMI may be an important predictor in our modeling stage. The presence of a long right tail also indicates the potential value of tree-based models, which can naturally capture nonlinear relationships without requiring transformation.</p>
+</section>
 </section>
 <section id="categorical-variables" class="level3">
 <h3 class="anchored" data-anchor-id="categorical-variables">Categorical Variables</h3>
+<p>The quick frequency tables summarize the distributions of all of the key categorical predictors, including high blood pressure, high cholesterol, smoking status, physical activity, difficulty walking, sex, general health, age category, and income.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(high_bp, high_chol, smoker, phys_activity, diff_walk,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>sex, gen_hlth, age, income) <span class="sc">%&gt;%</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">map</span>(<span class="sc">~</span> <span class="fu">count</span>(<span class="fu">as.data.frame</span>(.), .))  <span class="co"># quick counts</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display frequency counts for major categorical predictors</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">select</span>(high_bp, high_chol, smoker, phys_activity, diff_walk,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>sex, gen_hlth, age, income) <span class="sc">%&gt;%</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">map</span>(<span class="sc">~</span> <span class="fu">count</span>(<span class="fu">as.data.frame</span>(.), .))  <span class="co"># quick counts</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$high_bp
          .      n
@@ -643,22 +669,31 @@ $income
 8 8 90385</code></pre>
 </div>
 </div>
-<p>The output shows the frequency of each category for these predictors.</p>
+<p>Most variables show strong imbalance between their categories — for example, far more individuals report <strong>NoHighBP</strong> than <strong>HighBP</strong>, and physical activity (<strong>PhysActive</strong>) is much more common than inactivity (<strong>NoPA</strong>). These imbalances reflect realistic population patterns, but they also signal that some predictors may carry strong associations with diabetes simply due to the prevalence of certain health behaviors or conditions.</p>
+<p>Understanding these distributions is important for two reasons:</p>
+<ol type="1">
+<li><strong>Modeling impact:</strong> Tree-based models and random forests handle categorical imbalance well, but predictors with highly dominant categories may still contribute unevenly.<br>
+</li>
+<li><strong>Relationship context:</strong> Categories such as “DiffWalk,” “Poor” general health, or “HighBP” are expected to relate to chronic conditions, including diabetes. Seeing their frequencies now provides context for why they may appear as strong predictors later in the bivariate analysis and model fitting.</li>
+</ol>
+<p>Together, these numeric and categorical summaries provide a foundational understanding of the health indicators in this dataset and show early signs of meaningful differences between individuals with and without diabetes.</p>
 </section>
 </section>
 <section id="bivariate-relationships-with-diabetes" class="level2">
 <h2 class="anchored" data-anchor-id="bivariate-relationships-with-diabetes">Bivariate Relationships With Diabetes</h2>
+<p>In this section, I explore how some of the key predictors relate directly to the diabetes outcome. While earlier summaries focused on understanding individual variables on their own, the goal here is to examine how differences in health behaviors, conditions, and demographic factors manifest across diabetes groups. These visualizations help identify which predictors show the strongest separation between individuals with and without diabetes and therefore hold the greatest potential predictive value. Understanding these relationships provides a crucial bridge between EDA and the modeling stage, guiding expectations about which variables may drive model performance and how different modeling approaches might capture these patterns.</p>
 <section id="bmi-vs-diabetes-status" class="level3">
 <h3 class="anchored" data-anchor-id="bmi-vs-diabetes-status">BMI vs Diabetes Status</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> diabetes_binary, <span class="at">y =</span> bmi)) <span class="sc">+</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"BMI by Diabetes Status"</span>,</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Diabetes Status"</span>,</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"BMI"</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare BMI distributions between diabetes and non-diabetes groups</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> diabetes_binary, <span class="at">y =</span> bmi)) <span class="sc">+</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"BMI by Diabetes Status"</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Diabetes Status"</span>,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"BMI"</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -668,24 +703,25 @@ $income
 </div>
 </div>
 </div>
-<p>I typically see higher median BMI among those with diabetes, suggesting BMI is a strong predictor for the modeling stage.</p>
+<p>The boxplot above comparing BMI between individuals with and without diabetes shows a clear difference: those with diabetes tend to have noticeably higher BMI values on average. The median BMI is shifted upward in the diabetes group, and the overall spread is larger, reflecting greater variability among individuals diagnosed with diabetes. This alignment with medical expectations reinforces BMI as an important predictor. For modeling, this suggests a potentially nonlinear relationship — individuals with moderate or high BMI may experience a sharp increase in diabetes risk, which tree-based models can naturally capture.</p>
 </section>
 <section id="high-blood-pressure-and-diabetes" class="level3">
 <h3 class="anchored" data-anchor-id="high-blood-pressure-and-diabetes">High Blood Pressure and Diabetes</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(diabetes_binary, high_bp) <span class="sc">%&gt;%</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">group_by</span>(diabetes_binary) <span class="sc">%&gt;%</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> diabetes_binary, <span class="at">y =</span> prop, <span class="at">fill =</span> high_bp)) <span class="sc">+</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"High Blood Pressure Status by Diabetes Outcome"</span>,</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Diabetes Status"</span>,</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Proportion"</span>,</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="at">fill =</span> <span class="st">"High BP"</span></span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Examine the relationship between high blood pressure and diabetes status</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(diabetes_binary, high_bp) <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">group_by</span>(diabetes_binary) <span class="sc">%&gt;%</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">prop =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> diabetes_binary, <span class="at">y =</span> prop, <span class="at">fill =</span> high_bp)) <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"High Blood Pressure Status by Diabetes Outcome"</span>,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Diabetes Status"</span>,</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Proportion"</span>,</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="at">fill =</span> <span class="st">"High BP"</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -695,21 +731,22 @@ $income
 </div>
 </div>
 </div>
-<p>The proportion of individuals with high blood pressure tends to be higher among those with diabetes, which indicates a strong association and usefulness as a predictor.</p>
+<p>The proportional bar chart above indicates that high blood pressure is much more common among individuals with diabetes than among those without. While the majority of the full sample reports no high blood pressure, the share of HighBP cases is substantially higher in the diabetes group. This pattern suggests a strong positive relationship: people with elevated blood pressure are more likely to also have diabetes. Given the strength and clarity of this relationship, high blood pressure may be among the most influential predictors in the modeling phase.</p>
 </section>
 <section id="general-health-and-diabetes" class="level3">
 <h3 class="anchored" data-anchor-id="general-health-and-diabetes">General Health and Diabetes</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> gen_hlth, <span class="at">fill =</span> diabetes_binary)) <span class="sc">+</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"General Health and Diabetes Outcome"</span>,</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Self-reported General Health"</span>,</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Proportion"</span>,</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="at">fill =</span> <span class="st">"Diabetes Status"</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize how self-reported general health differs by diabetes outcome</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> gen_hlth, <span class="at">fill =</span> diabetes_binary)) <span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"General Health and Diabetes Outcome"</span>,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Self-reported General Health"</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Proportion"</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="at">fill =</span> <span class="st">"Diabetes Status"</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -719,21 +756,22 @@ $income
 </div>
 </div>
 </div>
-<p>Those reporting worse general health (Fair, Poor) appear more likely to have diabetes, which is consistent with medical expectations.</p>
+<p>When examining general health categories, the distribution shifts dramatically between diabetes groups. Individuals reporting Excellent or VeryGood health are far more prevalent in the non-diabetes group, whereas categories such as Fair and Poor are noticeably over-represented in the diabetes group. This pattern supports the intuitive idea that poorer overall health aligns with chronic conditions like diabetes. It also suggests that the GenHlth variable captures a broad combination of lifestyle and medical risk factors, making it valuable for prediction.</p>
 </section>
 <section id="physical-activity-and-diabetes" class="level3">
 <h3 class="anchored" data-anchor-id="physical-activity-and-diabetes">Physical Activity and Diabetes</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> phys_activity, <span class="at">fill =</span> diabetes_binary)) <span class="sc">+</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"Physical Activity and Diabetes Outcome"</span>,</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Physical Activity in Past 30 Days"</span>,</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Proportion"</span>,</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="at">fill =</span> <span class="st">"Diabetes Status"</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Explore how physical activity levels vary across diabetes groups</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>diabetes <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> phys_activity, <span class="at">fill =</span> diabetes_binary)) <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">labs</span>(</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="at">title =</span> <span class="st">"Physical Activity and Diabetes Outcome"</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="at">x =</span> <span class="st">"Physical Activity in Past 30 Days"</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="at">y =</span> <span class="st">"Proportion"</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="at">fill =</span> <span class="st">"Diabetes Status"</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -743,24 +781,15 @@ $income
 </div>
 </div>
 </div>
-<p>Individuals with diabetes are more likely to report no recent physical activity. This supports including physical activity as a predictor.</p>
+<p>The physical activity comparison reveals that those with diabetes are less likely to report recent physical activity. While physical activity is common in the dataset as a whole, the share of NoPA cases increases among individuals with diabetes. This indicates a meaningful behavioral difference and highlights physical inactivity as a potential risk indicator. This relationship may complement predictors like BMI and blood pressure, offering a lifestyle-based signal in the model.</p>
 </section>
 </section>
-<section id="summary-and-transition-to-modeling" class="level2">
-<h2 class="anchored" data-anchor-id="summary-and-transition-to-modeling">Summary and Transition to Modeling</h2>
-<p>In this EDA, I:</p>
-<ul>
-<li>Cleaned the dataset and converted key variables to factors.</li>
-<li>Checked for missingness and outcome imbalance.</li>
-<li>Explored distributions and relationships between predictors and diabetes status.</li>
-</ul>
-<p>Several predictors (e.g., BMI, HighBP, GenHlth, PhysActivity, DiffWalk) show meaningful associations with diabetes, making them good candidates for a predictive model.</p>
-<p>Next, I will:</p>
-<ul>
-<li>Split the data into training and test sets.</li>
-<li>Fit and compare classification tree and random forest models using log-loss.</li>
-<li>Select a final “best” model for deployment as an API.</li>
-</ul>
+<section id="summary-of-findings-and-transition-to-modeling" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-findings-and-transition-to-modeling">Summary of Findings and Transition to Modeling</h2>
+<p>This exploratory analysis provided a detailed look at how key health indicators differ between individuals with and without diabetes in the BRFSS dataset. Several variables displayed strong and meaningful relationships with diabetes status. In particular, individuals with diabetes tended to have higher BMI values, were more likely to report high blood pressure, were less physically active, and reported poorer overall health. These patterns align with clinical expectations and suggest that multiple lifestyle and health-condition indicators contribute to diabetes risk.</p>
+<p>The categorical summaries showed substantial imbalance across many predictors, but the direction of those imbalances was informative: categories representing poorer health or more limited mobility were consistently more common among those with diabetes. Meanwhile, variables like age, income, and sex appeared to have weaker but still potentially relevant associations, especially when combined with the stronger health-related predictors.</p>
+<p>Overall, the EDA results highlight which predictors are most promising for building an accurate model and reinforce the need for modeling techniques that can capture nonlinear and interaction-based relationships. With this understanding, the next step is to formally evaluate predictive models using a training/test split and compare performance across a classification tree and a random forest to identify the best approach.</p>
+<p><a href="Modeling.qmd">Click here for the Modeling Page</a></p>
 
 
 </section>
