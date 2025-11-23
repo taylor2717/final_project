@@ -179,7 +179,7 @@ Key ideas:
 
 - Trees are interpretable, but a single tree can be unstable and prone to overfitting.
 
-The main hyperparameter I tune for the tree is the cost_complexity (pruning strength), along with optional control over tree depth.
+The main hyperparameter I tune for the tree is the cost_complexity (pruning strength), along with control over tree depth.
 
 
 ### Tree Model Specification and Grid
